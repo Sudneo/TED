@@ -1,0 +1,56 @@
+{
+    "ELFs": {
+        "Description": "A set of checks is made on each ELF file. The check includes three main areas: 1)NoExec, which consists of three independent tests to verify that the sectionsof each ELF that do not contain code are NOT flagged as executable.The first test checks if the stack is marked as executable.The second test checks that there are no sections in the whole ELF which aremarked both Writable and eXecutable (W^X).The third test checks that rabin2 output on the elf includes the nx flag.rabin2 checks that the GNU_STACK section is not executable, similarly to whatis done in the first test.2)Stripped. This test simply verifies if the ELF has been stripped.3)Stack smashing protector. This test is composed of two subtests:The first test checks the output of rabin2 and verifies that the canaries flag is present.The second test uses objdump to disassemble the ELF and verifies thatthe code contains a call to stack_chk_fail."
+    }, 
+    "System checks": {
+        "ASLR": {
+            "ASLR_hard_check": "ASLR is enabled and applied also for data segment.", 
+            "ASLR_hard_value": "2", 
+            "ASLR_soft_check": "ASLR is enabled and applied also for data segment.", 
+            "ASLR_soft_value": "2", 
+            "Description": "This check verifies that ASLR is in place and also to what extent.The check itself is made in two ways, here called soft and hard.The soft check queries the kernel parameter randomize_va_space viathe sysctl command. The hard check instead runs a simple binary thatprints out the address of the stack pointer, the address of the systemenvironmental variables and the address returned by a malloc call.This operation is done 10 times and then it is verified whether there areduplicates in the addresses returned.", 
+            "Score": 5
+        }, 
+        "Kernelpop": {
+            "Description": "This check uses kernelpop tool to determine whether the running kernelis vulnerable to known exploits. In order to do so, a database with exploit is maintained. For more info check https://github.com/spencerdodd/kernelpop", 
+            "Score": 10, 
+            "confirmed": [
+                {
+                    "cve": "CVE20177308", 
+                    "description": "`packet_set_ring` in net/packet/af_packet.c can gain privileges via crafted system calls.", 
+                    "reliability": " HIGH"
+                }
+            ], 
+            "potential": [
+                "No potential exploits"
+            ]
+        }, 
+        "Nx_support": {
+            "Description": "This simple check verifies only that the CPU supports the nx bit.If this is true, it means that all the executable should also flag the memory segments that do not contain code as non-executable.All modern (64bit) CPUs should support the nx-bit, which allows the Operating systems to flag memory pages as Non-Exec by setting this bit to 1.For 32bit machines, this bit is available only if processor supports PAE.", 
+            "Score": 0, 
+            "nx_supported": true
+        }, 
+        "Spectre_meltdown": {
+            "Description": "This test uses a third party script to check if the system isvulnerable to three variants of the Spectre and Meltdown attacks.The script can be found at https://github.com/speed47/spectre-meltdown-checker", 
+            "Score": 30, 
+            "Variant 1": {
+                "action": "Kernel source needs to be patched to mitigate the vulnerability", 
+                "cve": "CVE-2017-5753", 
+                "vulnerable": true
+            }, 
+            "Variant 2": {
+                "action": "IBRS hardware + kernel support OR kernel with retpoline are needed to mitigate the vulnerability", 
+                "cve": "CVE-2017-5715", 
+                "vulnerable": true
+            }, 
+            "Variant 3": {
+                "action": "PTI is needed to mitigate the vulnerability", 
+                "cve": "CVE-2017-5754", 
+                "vulnerable": true
+            }
+        }, 
+        "System score": "45/100"
+    }, 
+    "time": "2018-03-30 20:39:15.493874", 
+    "type": "full"
+}

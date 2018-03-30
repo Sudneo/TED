@@ -24,8 +24,7 @@ class output_parser:
         if scan_type == "full" and (
                         kp_report is None or nx_report is None or spec_report is None or aslr_report is None):
             raise RuntimeError("Some reports are not available for a full scan")
-        if len(elf_reports) == 0:
-            raise RuntimeError("The list of ELFs is empty")
+
         self.kernelpop_report = kp_report
         self.spectre_meltdown_report = spec_report
         self.nx_support_report = nx_report
@@ -176,6 +175,7 @@ class output_parser:
         return self.aslr_report
 
     def parse_elfs_report(self):
+
         # self.elf_reports is a list of reports for every elf
         if self.output_format == "json":
             global_report = {'Description': 'A set of checks is made on each ELF file. '
@@ -194,6 +194,8 @@ class output_parser:
                                             'flag is present.'
                                             'The second test uses objdump to disassemble the ELF and verifies that'
                                             'the code contains a call to stack_chk_fail.'}
+            if len(self.elf_reports) == 0:
+                return global_report
             for elf_report in self.elf_reports:
                 noexec_score, stripped_score, canaries_score = scorer.get_elf_score(elf_report)
                 elf_score = noexec_score + stripped_score + canaries_score
@@ -213,6 +215,8 @@ class output_parser:
             elfs_lines = []
             header = "Filename,SHA256,Score(/60),Stack Executable,W^X enforced,NX flag,stripped,canaries,stack_chk_fail\n"
             elfs_lines.append(header)
+            if len(self.elf_reports) == 0:
+                return elfs_lines
             for elf_report in self.elf_reports:
                 noexec_score, stripped_score, canaries_score = scorer.get_elf_score(elf_report)
                 elf_score = noexec_score + stripped_score + canaries_score

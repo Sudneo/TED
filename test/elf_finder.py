@@ -1,5 +1,8 @@
 import os
 import magic
+import lief
+from stopit import SignalTimeout as Timeout
+from stopit import TimeoutException
 
 class elf_finder:
 
@@ -28,9 +31,15 @@ class elf_finder:
         :return: True if the file is ELF, false otherwise
         """
         try:
-            filetype=magic.from_file(path)
-            if "ELF" in filetype:
-                return True
+             # filetype=magic.from_file(path)
+             # if "ELF" in filetype:
+             #     return True
+            with Timeout(5.0) as timeout_ctx:
+                bytes = open(path,"rb").read(4).encode('hex')
+                if bytes == "7f454c46":
+                    return True
+                else:
+                    return False
         except:
             print "[WARNING] Couldn't determine if "+path+" is ELF: is_elf failed"
 
