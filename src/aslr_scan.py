@@ -107,4 +107,9 @@ class aslr_scan:
         list_value.append(hard_report)
         list_value.append(soft_report)
         result={'ASLR' : list_value}
+        self.end_scan()
         return result
+
+
+    def end_scan(self):
+        self.container_id.kill()

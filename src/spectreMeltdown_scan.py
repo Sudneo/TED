@@ -33,26 +33,14 @@ class spectreMeltdown_scan():
         Collects the output of the script at https://github.com/speed47/spectre-meltdown-checker
         :return: a JSON output with the three versions of spectre and meltdown
         """
-        # client = docker.DockerClient(base_url='unix:///var/run/docker.sock')
-        # capabilities=[].append("ALL")
-        # volume = {}
-        # dev_content = {}
-        # dev_content['bind'] = '/dev'
-        # dev_content['mode'] = 'ro'
-        # volume['/dev'] = dev_content
-        # boot_content={}
-        # boot_content['bind'] = '/boot'
-        # boot_content['mode'] = 'ro'
-        # volume['/boot'] = boot_content
-        # container = client.containers.run(self.docker_image, privileged=True , cap_add=capabilities , volumes=volume , detach=True)
-        # json_logs = ""
-        # for line in container.logs(stream=True):
-        #     json_logs = json_logs + line
-        # return json.loads(json.dumps(json_logs))
-
         exit_code, output = self.container_id.exec_run("bash /spectre-meltdown/spectre-meltdown-checker.sh --batch json")
         json_output = "[" + output.split("[", 1)[-1]
         if exit_code == 2:
+            self.end_scan()
             return json.loads(json.dumps(json_output))
         else:
+            self.end_scan()
             raise RuntimeError('The spectre-meltdown check failed. Exit code: '+exit_code)
+
+    def end_scan(self):
+        self.container_id.kill()
