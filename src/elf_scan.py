@@ -43,8 +43,6 @@ class elf_scan:
 
     def get_sssp(self, filename_full_path):
         exit_code,output=self.container_id.exec_run("objdump -d /target"+filename_full_path)
-        if exit_code != 0:
-            raise RuntimeError('The objdump command failed')
         STACK_CHK = "__stack_chk_fail"
         report = { 'SSSP' : False}
         for line in output.split("\n"):
