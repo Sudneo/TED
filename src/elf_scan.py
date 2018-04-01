@@ -29,11 +29,8 @@ class elf_scan:
     def get_sections(self,filename_full_path):
         exit_code,output=self.container_id.exec_run("rabin2 -Sj /target"+filename_full_path, stderr=False, stdout=True)
         json_output="{"+output.split("{",1)[-1]
-        print "File is "+filename_full_path
         end = json_output.rfind("}")
         out = json_output[:end+1].replace("Unsupported relocation type for imports 1","").replace("Warning: Cannot initialize dynamic strings","")
-        print json_output
-        print out
         if exit_code == 0:
             return json.loads(json.dumps(out))
         else:
@@ -43,7 +40,7 @@ class elf_scan:
         exit_code,output=self.container_id.exec_run("rabin2 -Ij /target"+filename_full_path)
         json_output="{"+output.split("{",1)[-1]
         end = json_output.rfind("}")
-        out = json_output[:end+1]
+        out = json_output[:end+1].replace("Unsupported relocation type for imports 1","").replace("Warning: Cannot initialize dynamic strings","")
         if exit_code == 0:
             return json.loads(json.dumps(out))
         else:

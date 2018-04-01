@@ -17,11 +17,14 @@ class elf_finder:
         elf_files=[]
         for root,dir, files in os.walk(self.root_dir):
             for file in files:
-                if os.path.islink(root+"/"+file) or root+"/"+file == "/proc/kcore":
+                try:
+                    if os.path.islink(root+"/"+file) or os.path.getsize(root+"/"+file) > 25000000:
+                        continue
+                    else:
+                        if self.is_elf(root+"/"+file):
+                            elf_files.append(root+"/"+file)
+                except:
                     continue
-                else:
-                    if self.is_elf(root+"/"+file):
-                        elf_files.append(root+"/"+file)
         return elf_files
 
 
@@ -32,7 +35,7 @@ class elf_finder:
         :return: True if the file is ELF, false otherwise
         """
         try:
-            with Timeout(5.0) as timeout_ctx:
+            with Timeout(1.0) as timeout_ctx:
                 try:
                     bytes = open(path,"rb").read(4).encode('hex')
                     if bytes == "7f454c46":
@@ -40,7 +43,7 @@ class elf_finder:
                     else:
                         return False
                 except TimeoutException:
-                    print "Could not open the file"+path+" in 5s. Skipping."
+                    print "[WARNING] Could not open the file"+path+" in 1s. Skipping."
         except:
             print "[WARNING] Couldn't determine if "+path+" is ELF."
 
