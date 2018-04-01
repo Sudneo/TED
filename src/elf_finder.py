@@ -17,8 +17,11 @@ class elf_finder:
         elf_files=[]
         for root,dir, files in os.walk(self.root_dir):
             for file in files:
-                if self.is_elf(root+"/"+file):
-                    elf_files.append(root+"/"+file)
+                if os.path.islink(root+"/"+file):
+                    continue
+                else:
+                    if self.is_elf(root+"/"+file):
+                        elf_files.append(root+"/"+file)
         return elf_files
 
 

@@ -20,7 +20,9 @@ class elf_scan:
         elf_dir['bind'] = "/target"
         elf_dir['mode'] = 'ro'
         volume['/'] = elf_dir
-        container = client.containers.run(self.docker_image,tty=True, command="bash", volumes=volume , detach=True)
+        capabilities = [].append("ALL")
+        container = client.containers.run(self.docker_image,tty=True, command="bash", privileged=True,
+                                          volumes=volume, cap_add=capabilities, detach=True)
         return container
 
 
@@ -39,6 +41,7 @@ class elf_scan:
         if exit_code == 0:
             return json.loads(json.dumps(json_output))
         else:
+            print json_output
             raise RuntimeError('The command in get_info failed')
 
     def get_sssp(self, filename_full_path):
