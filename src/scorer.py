@@ -12,11 +12,11 @@ def get_spectre_score(spectre_report):
     spectre_variant_two = spectre_report[1]
     spectre_variant_three = spectre_report[2]
     score = 0
-    if spectre_variant_one['VULNERABLE']:
+    if spectre_variant_one['VULNERABLE'] != False:
         score += 10
-    if spectre_variant_two['VULNERABLE']:
+    if spectre_variant_two['VULNERABLE'] != False:
         score += 10
-    if spectre_variant_three['VULNERABLE']:
+    if spectre_variant_three['VULNERABLE'] != False:
         score += 10
     return score
 
