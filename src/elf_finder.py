@@ -17,7 +17,7 @@ class elf_finder:
         elf_files=[]
         for root,dir, files in os.walk(self.root_dir):
             for file in files:
-                if os.path.islink(root+"/"+file):
+                if os.path.islink(root+"/"+file) or root+"/"+file == "/proc/kcore":
                     continue
                 else:
                     if self.is_elf(root+"/"+file):
