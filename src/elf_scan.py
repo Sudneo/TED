@@ -37,7 +37,7 @@ class elf_scan:
             raise RuntimeError('The command in get_sections failed')
 
     def get_information(self,filename_full_path):
-        exit_code,output=self.container_id.exec_run("rabin2 -Ij /target"+filename_full_path)
+        exit_code,output=self.container_id.exec_run("rabin2 -Ij /target"+filename_full_path, stderr=False, stdout=True)
         json_output="{"+output.split("{",1)[-1]
         end = json_output.rfind("}")
         out = json_output[:end+1].replace("Unsupported relocation type for imports 1","").replace("Warning: Cannot initialize dynamic strings","")
