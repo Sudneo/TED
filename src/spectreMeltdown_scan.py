@@ -35,12 +35,12 @@ class spectreMeltdown_scan():
         """
         exit_code, output = self.container_id.exec_run("bash /spectre-meltdown/spectre-meltdown-checker.sh --batch json")
         json_output = "[" + output.split("[", 1)[-1]
-        if exit_code == 2:
+        if exit_code <= 2:
             self.end_scan()
             return json.loads(json.dumps(json_output))
         else:
             self.end_scan()
-            raise RuntimeError('The spectre-meltdown check failed. Exit code: '+exit_code)
+            raise RuntimeError('The spectre-meltdown check failed. Exit code: '+str(exit_code))
 
     def end_scan(self):
         self.container_id.kill()
