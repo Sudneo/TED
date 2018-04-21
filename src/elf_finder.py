@@ -43,7 +43,7 @@ class elf_finder:
                     else:
                         return False
                 except TimeoutException:
-                    print "[WARNING] Could not open the file"+path+" in 1s. Skipping."
+                    print "[WARNING] 7fCould not open the file"+path+" in 1s. Skipping."
         except:
             print "[WARNING] Couldn't determine if "+path+" is ELF."
 
