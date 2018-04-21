@@ -61,10 +61,24 @@ class Kernelpop_scan(object):
                         'description' : rows[index][2]
                     })
                     index+=1
-                #Here rows[index][0] is Potential exploits
-                potential_index=index+1
+            else:
+                index=2
+            #Here rows[index][0] is Potential exploits
+            potential_index=index+1
+            result['report']['potential'] = []
+            if rows[potential_index][0]!="no potential exploits found":
+                for row in rows[potential_index:]:
+                    result['report']['potential'].append({
+                        'cve': row[0],
+                        'reliability': row[1],
+                        'description': row[2]
+                    })
+                    self.cleanup_files()
+            else:
+                index=2
+                potential_index = index + 1
                 result['report']['potential'] = []
-                if rows[potential_index][0]!="no potential exploits found":
+                if rows[potential_index][0] != "no potential exploits found":
                     for row in rows[potential_index:]:
                         result['report']['potential'].append({
                             'cve': row[0],
