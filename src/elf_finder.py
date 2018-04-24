@@ -18,7 +18,7 @@ class elf_finder:
         for root,dir, files in os.walk(self.root_dir):
             for file in files:
                 try:
-                    if os.path.islink(root+"/"+file) or os.path.getsize(root+"/"+file) > 25000000:
+                    if os.path.islink(root+"/"+file):
                         continue
                     else:
                         if self.is_elf(root+"/"+file):
