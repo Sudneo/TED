@@ -208,12 +208,12 @@ class output_parser:
                 single_report['Stack_Smashing_Protector'] = {'canaries': elf_report['canaries'][0]['canaries'],
                                                              'stack_chk_fail': elf_report['canaries'][1]['sssp'],
                                                              'Score': canaries_score}
-                single_report['ELF score'] = str(elf_score) + "/60"
+                single_report['ELF score'] = str(elf_score) + "/100"
                 global_report[elf_report['filename']] = single_report
             return global_report
         elif self.output_format == "csv":
             elfs_lines = []
-            header = "Filename,SHA256,Score(/60),Stack Executable,W^X enforced,NX flag,stripped,canaries,stack_chk_fail\n"
+            header = "Filename,SHA256,Score(/100),Stack Executable,W^X enforced,NX flag,stripped,canaries,stack_chk_fail\n"
             elfs_lines.append(header)
             if len(self.elf_reports) == 0:
                 return elfs_lines

@@ -1,9 +1,18 @@
+def get_next_decrescent(base,n):
+    return base/pow(2,n)
+
 def get_kernelpop_score(kernelpop_report):
     confirmed = kernelpop_report['report']['confirmed']
     potential = kernelpop_report['report']['potential']
-    score = len(confirmed) * 10 + len(potential) * 5
-    if score > 30:
-        score = 30
+    n=0
+    score=0
+    for exploit in confirmed:
+        score+=get_next_decrescent(15,n)
+        n+=1
+    n=0
+    for exploit in potential:
+        score+=get_next_decrescent(5,n)
+        n+=1
     return score
 
 
@@ -13,9 +22,9 @@ def get_spectre_score(spectre_report):
     spectre_variant_three = spectre_report[2]
     score = 0
     if spectre_variant_one['VULNERABLE'] != False:
-        score += 10
+        score += 5
     if spectre_variant_two['VULNERABLE'] != False:
-        score += 10
+        score += 5
     if spectre_variant_three['VULNERABLE'] != False:
         score += 10
     return score
@@ -58,18 +67,18 @@ def get_elf_score(elf_report):
     wx = elf_report['NoExec'][1]['WX_enforced']
     nx = elf_report['NoExec'][2]['nx']
     if stack_exec:
-        score_noexec += 10
+        score_noexec += 20
     if not nx:
         score_noexec += 10
     if not wx:
-        score_noexec += 10
+        score_noexec += 20
     stripped = elf_report['stripped']
     if not stripped:
         score_stripped += 10
     canaries = elf_report['canaries'][0]['canaries']
     ssp = elf_report['canaries'][1]['sssp']
     if not canaries:
-        score_canaries += 10
+        score_canaries += 20
     if not ssp:
-        score_canaries += 10
+        score_canaries += 20
     return score_noexec, score_stripped, score_canaries
