@@ -15,8 +15,7 @@ def get_args():
                                                  "ELF file present on the system.")
     output_format_group=parser.add_mutually_exclusive_group()
     output_format_group.add_argument('-Oj', '--output-json', dest="filejson", nargs='?', const="ted_result.json"
-                                     ,help="Saves the output in json format.\n "
-                                    "Default to ted_result.json")
+                                     , help="Saves the output in json format.\nDefault to ted_result.json")
     output_format_group.add_argument('-Oc', '--output-csv', dest="filecsv", nargs='?', const="ted_result.csv",
                                      help="Saves the output in csv format.\n "
                                           "Default to ted_result.csv")
@@ -29,7 +28,8 @@ def get_args():
                                       ' the ELFs in the system')
     scan_type_group.add_argument('-t', '--target-elf', dest="targetscan", nargs=1,
                                  help="Performs all the checks on a single ELF file")
-    parser.add_argument('-p', '--path', dest="path", nargs="?",default="/", const="/", help="The path in which to look for ELFs. Default /\n")
+    parser.add_argument('-p', '--path', dest="path", nargs="?",default="/", const="/",
+                        help="The path in which to look for ELFs. Default /\n")
 
     return parser.parse_args()
 
@@ -42,12 +42,13 @@ def get_scan_type():
     args = get_args()
     scan_type = "full"
     target_file = None
-    if args.elfscan == True:
+    if args.elfscan:
         scan_type = "elf"
-    elif args.targetscan != None:
+    elif args.targetscan is not None:
         scan_type = "single"
         target_file = args.targetscan[0]
     return scan_type, target_file
+
 
 def get_report_file():
     """
@@ -55,12 +56,13 @@ def get_report_file():
     :return: a tuple file_type, file_name. file_type can be 'json' or 'csv'.
     """
     args = get_args()
-    file_type="json"
-    if args.filejson == None:
+    file_type = "json"
+    if args.filejson is None:
         file_type = "csv"
         return file_type, args.filecsv
     else:
         return file_type, args.filejson
+
 
 def get_path_to_scan():
     """
@@ -70,35 +72,42 @@ def get_path_to_scan():
     args = get_args()
     return args.path
 
+
 def get_kernelpop_scan():
     kernelpop = Kernelpop_scan()
-    report=kernelpop.scan()
+    report = kernelpop.scan()
     kernelpop.cleanup_files()
     return report
+
 
 def get_nx_support_scan():
     nx_support = nx_scan()
     report = nx_support.scan()
     return report
 
+
 def get_spectre_meltdown_scan():
     spectre_meltdown = spectreMeltdown_scan()
     report = spectre_meltdown.scan()
     return report
+
 
 def get_aslr_scan():
     aslr = aslr_scan()
     report = aslr.scan()
     return report
 
+
 def get_all_elfs():
     all_elfs = elf_finder(get_path_to_scan()).get_elf_list()
     return all_elfs
 
-def get_elf_report(elf_scan,full_path):
-    elf_scanner = single_elf_scanner(elf_scan,full_path)
+
+def get_elf_report(elf_scan, full_path):
+    elf_scanner = single_elf_scanner(elf_scan, full_path)
     report = elf_scanner.scan()
     return report
+
 
 def print_report(report,output_file,output_format):
     with open(output_file, "w") as file:
@@ -109,6 +118,7 @@ def print_report(report,output_file,output_format):
             for line in lines:
                 file.write(line)
 
+
 def scan():
     """
     Main method of the class. It performs all the necessary scans.
@@ -116,16 +126,15 @@ def scan():
     """
 
     #The default is a full scan of system+all ELFs
-    scan_system=True
-    scan_elfs=True
-    scan_single_elf=False
-    #---
+    scan_system = True
+    scan_elfs = True
+    scan_single_elf = False
     scan_type, target_file = get_scan_type()
-    output_type,output_file = get_report_file()
-    kernelpop_report=None
-    nx_support_report=None
-    spectre_meltdown_report=None
-    aslr_report=None
+    output_type, output_file = get_report_file()
+    kernelpop_report = None
+    nx_support_report = None
+    spectre_meltdown_report = None
+    aslr_report = None
     if scan_type == "elf":
         scan_system = False
     elif scan_type == "single":
@@ -148,15 +157,18 @@ def scan():
         print "Checking all ELFs in "+get_path_to_scan()+"."
         elf_scanner = elf_scan()
         elfs = get_all_elfs()
-        for file in elfs:
-            report = get_elf_report(elf_scanner,file)
+        for filename in elfs:
+            report = get_elf_report(elf_scanner, filename)
             elf_reports.append(report)
+        elf_scanner.end_scan()
     elif scan_single_elf:
         print "Checking file "+target_file+"."
         elf_scanner = elf_scan()
-        report = get_elf_report(elf_scanner,target_file)
+        report = get_elf_report(elf_scanner, target_file)
         elf_reports.append(report)
-    output_p = output_parser(scan_type,output_type,output_file,kernelpop_report,nx_support_report,spectre_meltdown_report,aslr_report,elf_reports)
+        elf_scanner.end_scan()
+    output_p = output_parser(scan_type, output_type, output_file, kernelpop_report, nx_support_report,
+                             spectre_meltdown_report, aslr_report,elf_reports)
     output_p.print_report()
     print "Finished.\n Please check the report file "+output_file
 
