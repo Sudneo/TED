@@ -4,7 +4,7 @@ import src.elf_finder as elf_finder
 from src.Kernelpop_scan import *
 from src.nx_scan import *
 from src.spectreMeltdown_scan import *
-from src.aslr_scan import *
+from src.ASLR_scan import *
 from src.single_elf_scanner import *
 from src.elf_scan import *
 from src.output_parser import *
@@ -94,7 +94,7 @@ def get_spectre_meltdown_scan():
 
 
 def get_aslr_scan():
-    aslr = aslr_scan()
+    aslr = ASLR_scan()
     report = aslr.scan()
     return report
 
