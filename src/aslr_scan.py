@@ -1,5 +1,5 @@
 import docker
-
+import logging
 
 
 class aslr_scan:
@@ -50,6 +50,7 @@ class aslr_scan:
             return soft_check
         else:
             raise RuntimeError("Error during execution of ASRL soft check")
+            logging.error("The execution of sysctl command inside the container "+self.container_id+" failed.")
 
     def hard_scan_report(self,addresses):
         """
@@ -82,7 +83,6 @@ class aslr_scan:
         addresses['env']=[]
         addresses['stack']=[]
         addresses['heap']=[]
-        #client = docker.DockerClient(base_url='unix:///var/run/docker.sock')
         for i in range(10):
             exit_code, output = self.container_id.exec_run("./aslr/get_addresses")
             if exit_code == 0:
@@ -99,7 +99,7 @@ class aslr_scan:
     def scan(self):
         """
         Wrapper function to invoke both soft and hard scan and putting it together
-        :return: The combiantion of the report for the soft and the hard scan
+        :return: The combination of the report for the soft and the hard scan
         """
         hard_report=self.hard_scan()
         soft_report=self.soft_scan()

@@ -1,9 +1,10 @@
 import argparse
+import logging
+import src.elf_finder as elf_finder
 from src.Kernelpop_scan import *
 from src.nx_scan import *
 from src.spectreMeltdown_scan import *
 from src.aslr_scan import *
-from src.elf_finder import *
 from src.single_elf_scanner import *
 from src.elf_scan import *
 from src.output_parser import *
@@ -99,7 +100,7 @@ def get_aslr_scan():
 
 
 def get_all_elfs():
-    all_elfs = elf_finder(get_path_to_scan()).get_elf_list()
+    all_elfs = elf_finder.get_elf_list(get_path_to_scan())
     return all_elfs
 
 
