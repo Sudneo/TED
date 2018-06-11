@@ -3,6 +3,7 @@ from src.Scan import Scan
 import logging
 import json
 
+
 class Spectre_scan(Scan):
 
     """
@@ -30,7 +31,6 @@ class Spectre_scan(Scan):
         container = client.containers.run(self.docker_image, privileged=True, tty=True, command="bash",
                                                   cap_add=capabilities, volumes=volume, detach=True)
         return container
-
 
     def scan(self):
         """
