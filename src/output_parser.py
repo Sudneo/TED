@@ -76,6 +76,8 @@ class output_parser:
         spectre_variant_one = self.spectre_meltdown_report[0]
         spectre_variant_two = self.spectre_meltdown_report[1]
         spectre_variant_three = self.spectre_meltdown_report[2]
+        spectre_variant_four = self.spectre_meltdown_report[3]
+        spectre_variant_five = self.spectre_meltdown_report[4]
         if self.output_format == "json":
             spectre_report = {'Description': 'This test uses a third party script to check if the system is'
                                              'vulnerable to three variants of the Spectre and Meltdown attacks.'
@@ -91,17 +93,30 @@ class output_parser:
 
             spectre_report['Variant 2'] = {'vulnerable': spectre_variant_two['VULNERABLE'],
                                            'cve': spectre_variant_two['CVE']}
-            if spectre_variant_one['VULNERABLE']:
+            if spectre_variant_two['VULNERABLE']:
                 spectre_report['Variant 2']['action'] = spectre_variant_two['INFOS']
             else:
                 spectre_report['Variant 2']['action'] = "No actions needed." + spectre_variant_two['INFOS']
 
             spectre_report['Variant 3'] = {'vulnerable': spectre_variant_three['VULNERABLE'],
                                            'cve': spectre_variant_three['CVE']}
-            if spectre_variant_one['VULNERABLE']:
+            if spectre_variant_three['VULNERABLE']:
                 spectre_report['Variant 3']['action'] = spectre_variant_three['INFOS']
             else:
                 spectre_report['Variant 3']['action'] = "No actions needed." + spectre_variant_three['INFOS']
+            spectre_report['Variant 4'] = {'vulnerable': spectre_variant_four['VULNERABLE'],
+                                               'cve': spectre_variant_four['CVE']}
+            if spectre_variant_four['VULNERABLE']:
+                spectre_report['Variant 4']['action'] = spectre_variant_three['INFOS']
+            else:
+                spectre_report['Variant 4']['action'] = "No actions needed." + spectre_variant_four['INFOS']
+
+            spectre_report['Variant 5'] = {'vulnerable': spectre_variant_five['VULNERABLE'],
+                                                   'cve': spectre_variant_five['CVE']}
+            if spectre_variant_five['VULNERABLE']:
+                spectre_report['Variant 5']['action'] = spectre_variant_five['INFOS']
+            else:
+                spectre_report['Variant 5']['action'] = "No actions needed." + spectre_variant_five['INFOS']
             return spectre_report
         elif self.output_format == "csv":
             spectre_report_lines = []
@@ -112,10 +127,17 @@ class output_parser:
                       spectre_variant_two['INFOS'] + "\n"
             v3_line = "Variant 3," + str(spectre_variant_three['VULNERABLE']) + "," + spectre_variant_three[
                 'CVE'] + "," + spectre_variant_three['INFOS'] + "\n"
+            v4_line = "Variant 4," + str(spectre_variant_four['VULNERABLE']) + "," + spectre_variant_four[
+                'CVE'] + "," + spectre_variant_four['INFOS'] + "\n"
+            v5_line = "Variant 5," + str(spectre_variant_five['VULNERABLE']) + "," + spectre_variant_five[
+                'CVE'] + "," + spectre_variant_five['INFOS'] + "\n"
             spectre_report_lines.append(header)
             spectre_report_lines.append(v1_line)
             spectre_report_lines.append(v2_line)
             spectre_report_lines.append(v3_line)
+            spectre_report_lines.append(v4_line)
+            spectre_report_lines.append(v5_line)
+
             return spectre_report_lines
 
     def parse_nx_support_report(self):

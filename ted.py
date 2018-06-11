@@ -2,8 +2,8 @@ import argparse
 import logging
 import src.elf_finder as elf_finder
 from src.Kernelpop_scan import *
-from src.nx_scan import *
-from src.spectreMeltdown_scan import *
+from src.NX_scan import *
+from src.Spectre_scan import *
 from src.ASLR_scan import *
 from src.single_elf_scanner import *
 from src.elf_scan import *
@@ -82,13 +82,13 @@ def get_kernelpop_scan():
 
 
 def get_nx_support_scan():
-    nx_support = nx_scan()
+    nx_support = NX_scan()
     report = nx_support.scan()
     return report
 
 
 def get_spectre_meltdown_scan():
-    spectre_meltdown = spectreMeltdown_scan()
+    spectre_meltdown = Spectre_scan()
     report = spectre_meltdown.scan()
     return report
 
