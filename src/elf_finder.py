@@ -44,6 +44,7 @@ def get_elf_list(root_dir="/"):
                         elf_files.append(root+"/"+file)
             except:
                 continue
+    print "[+] A total of "+str(len(elf_files))+" binaries have been found and will be analyzed."
     return elf_files
 
 
