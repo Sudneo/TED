@@ -2,12 +2,13 @@ import argparse
 import logging
 import src.elf_finder as elf_finder
 from src.Kernelpop_scan import *
-from src.nx_scan import *
-from src.spectreMeltdown_scan import *
+from src.NX_scan import *
+from src.Spectre_scan import *
 from src.ASLR_scan import *
 from src.single_elf_scanner import *
 from src.elf_scan import *
 from src.output_parser import *
+from src.bcolors import *
 
 
 def get_args():
@@ -45,8 +46,10 @@ def get_scan_type():
     target_file = None
     if args.elfscan:
         scan_type = "elf"
+        logging.info("[+] ELF mode ")
     elif args.targetscan is not None:
         scan_type = "single"
+        logging.info("[+] Single binary mode")
         target_file = args.targetscan[0]
     return scan_type, target_file
 
@@ -75,6 +78,7 @@ def get_path_to_scan():
 
 
 def get_kernelpop_scan():
+    logging.info("[+] Performing a test with Kernelpop to verify kernel vulnerabilities")
     kernelpop = Kernelpop_scan()
     report = kernelpop.scan()
     kernelpop.cleanup_files()
@@ -82,18 +86,21 @@ def get_kernelpop_scan():
 
 
 def get_nx_support_scan():
-    nx_support = nx_scan()
+    logging.info("[+] Verifying NX bit support from the CPU")
+    nx_support = NX_scan()
     report = nx_support.scan()
     return report
 
 
 def get_spectre_meltdown_scan():
-    spectre_meltdown = spectreMeltdown_scan()
+    logging.info("[+] Performing a test to verify vulnerability to Spectre variants")
+    spectre_meltdown = Spectre_scan()
     report = spectre_meltdown.scan()
     return report
 
 
 def get_aslr_scan():
+    logging.info("[+] Verifying whether and how ASLR is enabled")
     aslr = ASLR_scan()
     report = aslr.scan()
     return report
@@ -108,16 +115,6 @@ def get_elf_report(elf_scan, full_path):
     elf_scanner = single_elf_scanner(elf_scan, full_path)
     report = elf_scanner.scan()
     return report
-
-
-def print_report(report,output_file,output_format):
-    with open(output_file, "w") as file:
-        if output_format == "json":
-            json.dump(report, file, sort_keys=True, indent=4)
-        elif output_format == "csv":
-            lines = report
-            for line in lines:
-                file.write(line)
 
 
 def scan():
@@ -145,17 +142,18 @@ def scan():
 
     if scan_system:
         #Perform system wide checks.
-        print "Checking if the kernel is vulnerable to known exploits."
+        print bcolors.WARNING+"[+] Checking if the kernel is vulnerable to known exploits."+bcolors.ENDC
         kernelpop_report = get_kernelpop_scan()
-        print "Checking if the CPU supports the nx bit on memory pages."
+        print bcolors.WARNING+"[+] Checking if the CPU supports the nx bit on memory pages."+bcolors.ENDC
         nx_support_report = get_nx_support_scan()
-        print "Checking system vulnerability to spectre and meltdown."
+        print bcolors.WARNING+"[+] Checking system vulnerability to spectre and meltdown."+bcolors.ENDC
         spectre_meltdown_report = json.loads(get_spectre_meltdown_scan())
-        print "Checking if ASLR is enabled and to what extent."
+        print bcolors.WARNING+"[+] Checking if ASLR is enabled and to what extent."+bcolors.ENDC
         aslr_report = get_aslr_scan()
+        print bcolors.FAIL+"[+] System checks are finished."+bcolors.ENDC
     elf_reports = []
     if scan_elfs:
-        print "Checking all ELFs in "+get_path_to_scan()+"."
+        print bcolors.WARNING+"[+] Checking all ELFs in "+get_path_to_scan()+"."+bcolors.ENDC
         elf_scanner = elf_scan()
         elfs = get_all_elfs()
         for filename in elfs:
@@ -163,7 +161,7 @@ def scan():
             elf_reports.append(report)
         elf_scanner.end_scan()
     elif scan_single_elf:
-        print "Checking file "+target_file+"."
+        print bcolors.WARNING+"[+] Checking file "+target_file+"."+bcolors.ENDC
         elf_scanner = elf_scan()
         report = get_elf_report(elf_scanner, target_file)
         elf_reports.append(report)
@@ -171,7 +169,7 @@ def scan():
     output_p = output_parser(scan_type, output_type, output_file, kernelpop_report, nx_support_report,
                              spectre_meltdown_report, aslr_report,elf_reports)
     output_p.print_report()
-    print "Finished.\n Please check the report file "+output_file
+    print bcolors.FAIL+"[+] Finished.\n Please check the report file -> "+output_file+bcolors.ENDC
 
 
 scan()
