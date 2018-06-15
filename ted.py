@@ -117,16 +117,6 @@ def get_elf_report(elf_scan, full_path):
     return report
 
 
-def print_report(report,output_file,output_format):
-    with open(output_file, "w") as file:
-        if output_format == "json":
-            json.dump(report, file, sort_keys=True, indent=4)
-        elif output_format == "csv":
-            lines = report
-            for line in lines:
-                file.write(line)
-
-
 def scan():
     """
     Main method of the class. It performs all the necessary scans.
