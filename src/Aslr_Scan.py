@@ -3,7 +3,7 @@ from src.Scan import Scan
 import logging
 
 
-class ASLR_scan(Scan):
+class AslrScan(Scan):
     """
     This class implements the ASLR scan, which is composed by two tests.
     The soft one consists on checking the randomize_va_space kernel varialbe
@@ -23,7 +23,7 @@ class ASLR_scan(Scan):
     @staticmethod
     def check_duplicates(address_list):
         """
-        :param addr_list: This is a list of addresses
+        :param address_list: This is a list of addresses
         :return: returns True if there are duplicates inside the list, False otherwise
         """
         return len(address_list) != len(set(address_list))
@@ -63,7 +63,6 @@ class ASLR_scan(Scan):
             result = {"ASLR_hard": "2"}
         return result
 
-
     def hard_scan(self):
         """
         Performs a harder check for ASLR. It executes a binary inside the container that prints the value of environment
@@ -73,10 +72,7 @@ class ASLR_scan(Scan):
         2 if all of them are different
         :return: 0,1 or 2 as describe before.
         """
-        addresses = {}
-        addresses['env'] = []
-        addresses['stack'] = []
-        addresses['heap'] = []
+        addresses = {'env': [], 'stack': [], 'heap': []}
         for i in range(10):
             exit_code, output = self.container_id.exec_run("./aslr/get_addresses")
             if exit_code == 0:
@@ -91,17 +87,14 @@ class ASLR_scan(Scan):
                 raise RuntimeError("Error during ASLR hard check")
         return self.hard_scan_report(addresses)
 
-
     def scan(self):
         """
         Wrapper function to invoke both soft and hard scan and putting it together
         :return: The combination of the report for the soft and the hard scan
         """
-        hard_report = self.hard_scan()
+        hard_report = self.hard_scan
         soft_report = self.soft_scan()
-        list_value = []
-        list_value.append(hard_report)
-        list_value.append(soft_report)
+        list_value = [hard_report, soft_report]
         result = {'ASLR': list_value}
         self.end_scan()
         return result

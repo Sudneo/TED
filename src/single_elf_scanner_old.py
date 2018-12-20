@@ -1,23 +1,22 @@
 import hashlib
 import json
 import scorer
-from bcolors import *
+from Colours import *
 
 
 class single_elf_scanner:
 
-
     """
     This class offers an interface to get information and reports about a single ELF file
     """
-
+    elf = None
     full_path=""
     information_report=None
     section_report=None
     sssp_report=None
     elfscan=None
 
-    def __init__(self,elf_scan, full_path):
+    def __init__(self, elf_scan, full_path):
         self.elfscan = elf_scan
         self.full_path = full_path
         self.information_report = json.loads(self.elfscan.get_information(full_path))
